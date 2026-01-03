@@ -5,262 +5,301 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        :root {
+            --bg-color: #0b0e11;
+            --card-bg: #171c24;
+            --border-color: #232a33;
+            --accent-color: #51b5ff;
+            --text-main: #ffffff;
+            --text-secondary: #8e97a3;
+        }
+
         body {
-            background-color: #0b0e11;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 0;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Шапка профиля */
+        /* Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px;
+            padding: 16px 20px;
         }
 
-        .profile {
+        .user-block {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        .avatar {
-            width: 38px;
-            height: 38px;
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #232a35;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 600;
-            color: #51b5ff;
-            border: 1px solid #2d3643;
+            font-weight: 700;
+            color: var(--accent-color);
+            border: 1px solid var(--border-color);
+            font-size: 18px;
         }
 
-        .balance {
+        .balance-badge {
             background: #1c222b;
-            padding: 6px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            border: 1px solid #2d3643;
+            font-size: 15px;
+            font-weight: 700;
+            border: 1px solid var(--border-color);
         }
 
-        /* Лента последних выигрышей */
-        .drops-line {
+        /* Live Drops */
+        .live-label {
+            font-size: 11px;
+            color: var(--accent-color);
+            font-weight: 800;
+            padding: 0 20px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .drops-wrapper {
             display: flex;
-            gap: 8px;
-            padding: 0 16px;
+            gap: 10px;
+            padding: 0 20px;
             overflow: hidden;
-            height: 40px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            mask-image: linear-gradient(to right, black 80%, transparent 100%);
         }
 
-        .drop-icon {
-            min-width: 36px;
-            height: 36px;
-            background: #171c24;
-            border-radius: 8px;
+        .drop-box {
+            min-width: 42px;
+            height: 42px;
+            background: var(--card-bg);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 2px solid #51b5ff;
+            border-bottom: 2px solid var(--accent-color);
         }
 
-        .drop-icon img { width: 24px; height: 24px; }
+        .drop-box img { width: 28px; height: 28px; }
 
-        /* Сетка кейсов */
-        .grid {
+        /* Case Grid */
+        .grid-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            padding: 0 16px 100px;
+            padding: 0 20px 40px;
         }
 
-        .case-card {
-            background: #171c24;
-            border-radius: 16px;
-            padding: 20px 10px;
+        .case-item {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px 15px;
             text-align: center;
-            border: 1px solid #232a33;
-            transition: transform 0.1s;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
-        .case-card:active { transform: scale(0.96); }
-
-        .case-card img {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+        .case-item:active {
+            transform: scale(0.97);
         }
 
-        .case-name {
-            font-size: 14px;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 4px;
+        .case-item img {
+            width: 85px;
+            height: 85px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
         }
 
-        .case-price {
-            font-size: 12px;
-            color: #51b5ff;
+        .case-title {
+            font-size: 15px;
             font-weight: 700;
+            margin-bottom: 6px;
         }
 
-        /* Модальные окна */
-        .modal {
+        .case-cost {
+            font-size: 13px;
+            color: var(--accent-color);
+            font-weight: 800;
+        }
+
+        /* Modal Sheets */
+        .modal-sheet {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #0b0e11;
-            z-index: 100;
+            background: var(--bg-color);
+            z-index: 1000;
             display: none;
             flex-direction: column;
-            padding: 20px;
+            padding: 24px;
             box-sizing: border-box;
         }
 
-        .modal.active { display: flex; }
+        .modal-sheet.active { display: flex; }
 
-        .modal-header {
+        .modal-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
-        .btn-close { font-size: 24px; color: #8e97a3; }
+        .close-icon { font-size: 28px; color: var(--text-secondary); cursor: pointer; }
 
-        .btn-action {
-            background: #51b5ff;
-            color: white;
+        .main-btn {
+            background: var(--accent-color);
+            color: #fff;
             border: none;
-            padding: 16px;
-            border-radius: 12px;
+            padding: 18px;
+            border-radius: 16px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             width: 100%;
             margin-top: auto;
         }
 
-        .input-box {
-            background: #171c24;
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid #2d3643;
+        .input-stars-wrap {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
             text-align: center;
         }
 
-        .input-box input {
-            background: none; border: none; color: white;
-            font-size: 32px; font-weight: 700; width: 100%;
+        .input-stars-wrap input {
+            background: none; border: none; color: #fff;
+            font-size: 36px; font-weight: 800; width: 100%;
             text-align: center; outline: none;
+        }
+
+        .sponsor-card {
+            background: var(--card-bg);
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border-color);
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="profile">
-            <div class="avatar" id="avatar">?</div>
-            <div style="font-size: 15px; font-weight: 600;" id="username">User</div>
+        <div class="user-block">
+            <div class="avatar-circle" id="user-avatar">?</div>
+            <div style="font-weight: 700; font-size: 16px;" id="user-name">Player</div>
         </div>
-        <div class="balance" onclick="openModal('modal-pay')">
-            <span id="bal-val">0</span>
+        <div class="balance-badge" onclick="openModal('pay-modal')">
+            <span id="bal-amount">0</span>
             <span style="color: #ffca28;">⭐</span>
         </div>
     </div>
 
-    <div class="drops-line" id="drops"></div>
+    <div class="live-label">Live Drops</div>
+    <div class="drops-wrapper" id="drops-container"></div>
 
-    <div class="grid">
-        <div class="case-card" onclick="openModal('modal-free')">
+    <div class="grid-container">
+        <div class="case-item" onclick="openModal('free-modal')">
             <img src="https://img.icons8.com/color/512/gift--v1.png">
-            <span class="case-name">Бесплатный</span>
-            <span class="case-price">ПОДПИСКА</span>
+            <span class="case-title">Бесплатный</span>
+            <span class="case-cost">ПОДПИСКА</span>
         </div>
         
-        <div class="case-card" onclick="haptic()">
+        <div class="case-item" onclick="haptic()">
             <img src="https://img.icons8.com/color/512/box.png">
-            <span class="case-name">Новичок</span>
-            <span class="case-price">49 ⭐</span>
+            <span class="case-title">Классик</span>
+            <span class="case-cost">50 ⭐</span>
         </div>
 
-        <div class="case-card" onclick="haptic()">
+        <div class="case-item" onclick="haptic()">
             <img src="https://img.icons8.com/color/512/crown.png">
-            <span class="case-name">Elite Case</span>
-            <span class="case-price">299 ⭐</span>
+            <span class="case-title">Элитный</span>
+            <span class="case-cost">250 ⭐</span>
         </div>
 
-        <div class="case-card" onclick="haptic()">
+        <div class="case-item" onclick="haptic()">
             <img src="https://img.icons8.com/color/512/diamond--v1.png">
-            <span class="case-name">Royal Box</span>
-            <span class="case-price">999 ⭐</span>
+            <span class="case-title">Королевский</span>
+            <span class="case-cost">1000 ⭐</span>
         </div>
     </div>
 
-    <div id="modal-pay" class="modal">
-        <div class="modal-header">
-            <span class="btn-close" onclick="closeModal('modal-pay')">✕</span>
-            <b>ПОПОЛНЕНИЕ</b>
-            <div style="width:24px;"></div>
+    <div id="pay-modal" class="modal-sheet">
+        <div class="modal-nav">
+            <span class="close-icon" onclick="closeModal('pay-modal')">✕</span>
+            <b style="letter-spacing: 1px;">ПОПОЛНЕНИЕ</b>
+            <div style="width:28px;"></div>
         </div>
-        <div class="input-box">
-            <div style="color: #8e97a3; font-size: 12px; margin-bottom: 8px;">Введите количество Stars</div>
-            <input type="number" id="stars-val" placeholder="0">
+        <div class="input-stars-wrap">
+            <div style="color: var(--text-secondary); font-size: 13px; margin-bottom: 10px;">Сумма Stars</div>
+            <input type="number" id="stars-input" placeholder="0">
         </div>
-        <button class="btn-action" onclick="sendPay()">ОПЛАТИТЬ</button>
+        <button class="main-btn" onclick="sendPayment()">КУПИТЬ ⭐</button>
     </div>
 
-    <div id="modal-free" class="modal">
-        <div class="modal-header">
-            <span class="btn-close" onclick="closeModal('modal-free')">✕</span>
-            <b>БЕСПЛАТНЫЙ КЕЙС</b>
-            <div style="width:24px;"></div>
+    <div id="free-modal" class="modal-sheet">
+        <div class="modal-nav">
+            <span class="close-icon" onclick="closeModal('free-modal')">✕</span>
+            <b style="letter-spacing: 1px;">КЕЙС ЗА ПОДПИСКУ</b>
+            <div style="width:28px;"></div>
         </div>
-        <div id="sp-list" style="flex-grow:1;">
+        <div id="sponsor-container" style="flex-grow:1; overflow-y:auto;">
             </div>
-        <button class="btn-action" onclick="checkSub()">ПРОВЕРИТЬ ПОДПИСКУ</button>
+        <button class="main-btn" onclick="checkSub()">ПРОВЕРИТЬ</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.backgroundColor = '#0b0e11';
+        tg.headerColor = '#0b0e11';
 
-        // Данные юзера
-        const user = tg.initDataUnsafe.user;
-        if(user) {
-            document.getElementById('username').innerText = user.first_name;
-            document.getElementById('avatar').innerText = user.first_name.charAt(0);
+        // Инициализация юзера
+        const u = tg.initDataUnsafe.user;
+        if(u) {
+            document.getElementById('user-name').innerText = u.first_name;
+            document.getElementById('user-avatar').innerText = u.first_name.charAt(0);
         }
 
-        // Лента дропов
-        const imgs = [
+        // Рандомная лента дропов
+        const dropAssets = [
             'https://img.icons8.com/color/512/red-rose.png',
             'https://img.icons8.com/color/512/diamond--v1.png',
             'https://img.icons8.com/color/512/trophy.png',
             'https://img.icons8.com/color/512/star--v1.png'
         ];
 
-        function addDrop() {
-            const d = document.getElementById('drops');
-            const i = document.createElement('div');
-            i.className = 'drop-icon';
-            i.innerHTML = `<img src="${imgs[Math.floor(Math.random()*imgs.length)]}">`;
-            d.prepend(i);
-            if(d.children.length > 10) d.lastChild.remove();
+        function pushDrop() {
+            const wrap = document.getElementById('drops-container');
+            const box = document.createElement('div');
+            box.className = 'drop-box';
+            box.innerHTML = `<img src="${dropAssets[Math.floor(Math.random()*dropAssets.length)]}">`;
+            wrap.prepend(box);
+            if(wrap.children.length > 12) wrap.lastChild.remove();
         }
-        setInterval(addDrop, 3000);
-        for(let x=0; x<7; x++) addDrop();
+        setInterval(pushDrop, 3500);
+        for(let i=0; i<8; i++) pushDrop();
 
+        // Управление модалками
         function openModal(id) { 
             tg.HapticFeedback.impactOccurred('medium');
             document.getElementById(id).classList.add('active'); 
@@ -268,25 +307,29 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         function haptic() { tg.HapticFeedback.selectionChanged(); }
 
-        function sendPay() {
-            const v = document.getElementById('stars-val').value;
-            if(v > 0) tg.sendData("pay:" + v);
+        function sendPayment() {
+            const val = document.getElementById('stars-input').value;
+            if(val >= 50) tg.sendData("pay:" + val);
+            else alert("Минимум 50 Stars");
         }
 
         function checkSub() { tg.sendData("action:check_sub"); }
 
-        // Спонсоры из URL
-        const params = new URLSearchParams(window.location.search);
-        const sp = params.get('sp');
-        if(sp) {
-            const list = document.getElementById('sp-list');
-            sp.split('|').forEach(s => {
-                const [n, l] = s.split(';');
+        // Загрузка спонсоров из URL (от бота)
+        const urlParams = new URLSearchParams(window.location.search);
+        const sponsorsParam = urlParams.get('sp');
+        if(sponsorsParam) {
+            const container = document.getElementById('sponsor-container');
+            sponsorsParam.split('|').forEach(item => {
+                const [name, link] = item.split(';');
                 const div = document.createElement('div');
-                div.style = "background:#171c24; padding:16px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; border: 1px solid #232a33;";
-                div.onclick = () => tg.openTelegramLink(l);
-                div.innerHTML = `<span>${n}</span> <span style="color:#51b5ff">→</span>`;
-                list.appendChild(div);
+                div.className = 'sponsor-card';
+                div.onclick = () => {
+                    tg.HapticFeedback.impactOccurred('light');
+                    tg.openTelegramLink(link);
+                };
+                div.innerHTML = `<span>${name}</span> <span style="color:var(--accent-color); font-weight:800;">GO</span>`;
+                container.appendChild(div);
             });
         }
     </script>
