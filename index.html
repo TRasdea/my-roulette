@@ -1,35 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background: #1a1a1a; color: white; text-align: center; font-family: sans-serif; }
-        .wheel-container { position: relative; width: 300px; height: 300px; margin: 50px auto; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1); }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid red; z-index: 10; }
-        button { padding: 15px 30px; font-size: 18px; cursor: pointer; background: #0088cc; color: white; border: none; border-radius: 10px; margin-top: 20px; }
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container { text-align: center; width: 100%; }
+        .wheel-wrapper {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 20px auto;
+        }
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
+            transition: transform 5s cubic-bezier(0.1, 0, 0, 1);
+        }
+        .arrow {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            z-index: 10;
+        }
+        .btn-spin {
+            background: linear-gradient(45deg, #0088cc, #00aaff);
+            border: none;
+            padding: 15px 50px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-top: 30px;
+        }
+        .btn-spin:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <h1>Твоя Рулетка 🎁</h1>
-    <div class="wheel-container">
-        <div class="pointer"></div>
-        <img id="wheel" src="https://i.imgur.com/v8p7S6S.png" alt="Wheel">
+
+<div class="container">
+    <h2 id="user-name">Удачи!</h2>
+    <div class="wheel-wrapper">
+        <img class="arrow" src="https://cdn-icons-png.flaticon.com/512/2985/2985150.png" alt="arrow">
+        <canvas id="wheel" width="500" height="500"></canvas>
     </div>
-    <button onclick="spin()">КРУТИТЬ!</button>
+    <button class="btn-spin" onclick="spinWheel()">КРУТИТЬ</button>
+</div>
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+<script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const gifts = ['Pepe NFT', 'Premium', 'Star 50', 'Dogecoin', 'NFT Case', 'Secret', 'Star 10', 'Pepe Gold'];
+    const colors = ['#FF4136', '#2ECC40', '#0074D9', '#FFDC00', '#B10DC9', '#FF851B', '#39CCCC', '#01FF70'];
+    
+    let currentRotation = 0;
 
-        function spin() {
-            let deg = Math.floor(5000 + Math.random() * 5000); // Случайное вращение
-            document.getElementById('wheel').style.transform = "rotate(" + deg + "deg)";
+    function drawWheel() {
+        const sliceAngle = (2 * Math.PI) / gifts.length;
+        gifts.forEach((gift, i) => {
+            ctx.beginPath();
+            ctx.fillStyle = colors[i];
+            ctx.moveTo(250, 250);
+            ctx.arc(250, 250, 250, i * sliceAngle, (i + 1) * sliceAngle);
+            ctx.fill();
             
-            setTimeout(() => {
-                alert("Поздравляем! Ты что-то выиграл!");
-            }, 4500);
-        }
-    </script>
+            ctx.save();
+            ctx.translate(250, 250);
+            ctx.rotate(i * sliceAngle + sliceAngle / 2);
+            ctx.fillStyle = "white";
+            ctx.font = "bold 24px Arial";
+            ctx.fillText(gift, 100, 10);
+            ctx.restore();
+        });
+    }
+
+    function spinWheel() {
+        const randomSpin = Math.floor(Math.random() * 360) + 3600; 
+        currentRotation += randomSpin;
+        canvas.style.transform = `rotate(${currentRotation}deg)`;
+        
+        setTimeout(() => {
+            tg.showPopup({
+                title: 'Поздравляем!',
+                message: 'Вы выиграли приз! Чтобы забрать его, напишите в чат бота.',
+                buttons: [{type: 'ok'}]
+            });
+        }, 5500);
+    }
+
+    drawWheel();
+</script>
 </body>
 </html>
