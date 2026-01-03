@@ -5,114 +5,230 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg: #0f1218; --card: #1c212a; --accent: #31a6ff;
-            --gold: #fbc02d; --text: #ffffff; --text-gray: #94a3b8;
-            --gradient: linear-gradient(145deg, #1c212a, #14171d);
+        body {
+            background-color: #0b0e11;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
-        /* Шапка в стиле OneCase */
-        .header { padding: 20px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 2px solid #2d3645; }
-        .balance-pill { background: #1e2530; padding: 6px 12px; border-radius: 12px; border: 1px solid #2d3645; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        /* Шапка профиля */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+        }
 
-        /* Лента дропов (компактная) */
-        .live-label { font-size: 10px; color: var(--accent); font-weight: 800; padding: 0 15px; text-transform: uppercase; }
-        .drops-container { height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 15px; overflow: hidden; margin-top: 5px; }
-        .drop-card { min-width: 40px; height: 40px; background: var(--card); border-radius: 10px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--accent); position: relative; }
-        .drop-card img { width: 28px; height: 28px; }
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        /* Сетка кейсов (2 колонки) */
-        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .case-item { background: var(--gradient); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid #2d3645; position: relative; overflow: hidden; }
-        .case-item::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(49,166,255,0.1) 0%, transparent 70%); z-index: 0; }
-        .case-img { width: 80px; height: 80px; margin-bottom: 12px; position: relative; z-index: 1; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
-        .case-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; display: block; }
-        .case-price { color: var(--gold); font-weight: 800; font-size: 13px; }
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #232a35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #51b5ff;
+            border: 1px solid #2d3643;
+        }
 
-        /* Кнопки и модалки */
-        .modal-screen { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); display: flex; flex-direction: column; }
-        .modal-screen.active { bottom: 0; }
-        .btn-main { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: 700; font-size: 16px; margin-top: auto; }
+        .balance {
+            background: #1c222b;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid #2d3643;
+        }
 
-        @keyframes slideIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* Лента последних выигрышей */
+        .drops-line {
+            display: flex;
+            gap: 8px;
+            padding: 0 16px;
+            overflow: hidden;
+            height: 40px;
+            margin-bottom: 20px;
+        }
+
+        .drop-icon {
+            min-width: 36px;
+            height: 36px;
+            background: #171c24;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid #51b5ff;
+        }
+
+        .drop-icon img { width: 24px; height: 24px; }
+
+        /* Сетка кейсов */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 16px 100px;
+        }
+
+        .case-card {
+            background: #171c24;
+            border-radius: 16px;
+            padding: 20px 10px;
+            text-align: center;
+            border: 1px solid #232a33;
+            transition: transform 0.1s;
+        }
+
+        .case-card:active { transform: scale(0.96); }
+
+        .case-card img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.3));
+        }
+
+        .case-name {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .case-price {
+            font-size: 12px;
+            color: #51b5ff;
+            font-weight: 700;
+        }
+
+        /* Модальные окна */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #0b0e11;
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .btn-close { font-size: 24px; color: #8e97a3; }
+
+        .btn-action {
+            background: #51b5ff;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .input-box {
+            background: #171c24;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #2d3643;
+            text-align: center;
+        }
+
+        .input-box input {
+            background: none; border: none; color: white;
+            font-size: 32px; font-weight: 700; width: 100%;
+            text-align: center; outline: none;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="user-info">
-            <div class="avatar" id="user-initial">?</div>
-            <div>
-                <div style="font-size: 14px; font-weight: 700;" id="user-name">Игрок</div>
-                <div style="font-size: 11px; color: var(--text-gray);">Новичок</div>
-            </div>
+        <div class="profile">
+            <div class="avatar" id="avatar">?</div>
+            <div style="font-size: 15px; font-weight: 600;" id="username">User</div>
         </div>
-        <div class="balance-pill" onclick="openModal('deposit-screen')">
-            <span style="color: var(--gold);">⭐</span>
-            <span id="balance">0</span>
+        <div class="balance" onclick="openModal('modal-pay')">
+            <span id="bal-val">0</span>
+            <span style="color: #ffca28;">⭐</span>
         </div>
     </div>
 
-    <div class="live-label">● Live Drops</div>
-    <div class="drops-container" id="live-drops"></div>
+    <div class="drops-line" id="drops"></div>
 
-    <div class="section-label" style="padding: 20px 15px 5px; font-size: 12px; color: var(--text-gray); font-weight: 700;">ДОСТУПНЫЕ КЕЙСЫ</div>
-    
-    <div class="cases-grid">
-        <div class="case-item" onclick="openModal('free-case-screen')">
-            <img src="https://img.icons8.com/color/512/gift--v1.png" class="case-img">
+    <div class="grid">
+        <div class="case-card" onclick="openModal('modal-free')">
+            <img src="https://img.icons8.com/color/512/gift--v1.png">
             <span class="case-name">Бесплатный</span>
-            <span class="case-price">0 ⭐</span>
+            <span class="case-price">ПОДПИСКА</span>
         </div>
         
-        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
-            <img src="https://img.icons8.com/color/512/box.png" class="case-img">
-            <span class="case-name">Classic Box</span>
-            <span class="case-price">100 ⭐</span>
+        <div class="case-card" onclick="haptic()">
+            <img src="https://img.icons8.com/color/512/box.png">
+            <span class="case-name">Новичок</span>
+            <span class="case-price">49 ⭐</span>
         </div>
 
-        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
-            <img src="https://img.icons8.com/color/512/crown.png" class="case-img">
+        <div class="case-card" onclick="haptic()">
+            <img src="https://img.icons8.com/color/512/crown.png">
             <span class="case-name">Elite Case</span>
-            <span class="case-price">500 ⭐</span>
+            <span class="case-price">299 ⭐</span>
         </div>
 
-        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
-            <img src="https://img.icons8.com/color/512/diamond--v1.png" class="case-img">
-            <span class="case-name">Royal Drop</span>
-            <span class="case-price">1500 ⭐</span>
+        <div class="case-card" onclick="haptic()">
+            <img src="https://img.icons8.com/color/512/diamond--v1.png">
+            <span class="case-name">Royal Box</span>
+            <span class="case-price">999 ⭐</span>
         </div>
     </div>
 
-    <div id="free-case-screen" class="modal-screen" style="padding: 20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span onclick="closeModal('free-case-screen')" style="font-size: 30px;">✕</span>
-            <b style="font-size:18px;">FREE CASE</b>
-            <div style="width:30px;"></div>
-        </div>
-        <div style="text-align:center; padding: 40px 0;">
-            <img src="https://img.icons8.com/color/512/gift--v1.png" style="width:140px;">
-            <h3>Выполни условия</h3>
-            <p style="color:var(--text-gray);">Подпишись на каналы партнеров, чтобы открыть этот кейс бесплатно.</p>
-        </div>
-        <div id="sponsor-list"></div>
-        <button class="btn-main" style="margin-top: 20px;" onclick="confirmSub()">ПРОВЕРИТЬ ПОДПИСКУ</button>
-    </div>
-
-    <div id="deposit-screen" class="modal-screen" style="padding: 20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span onclick="closeModal('deposit-screen')" style="font-size: 30px;">✕</span>
+    <div id="modal-pay" class="modal">
+        <div class="modal-header">
+            <span class="btn-close" onclick="closeModal('modal-pay')">✕</span>
             <b>ПОПОЛНЕНИЕ</b>
-            <div style="width:30px;"></div>
+            <div style="width:24px;"></div>
         </div>
-        <div style="margin-top:40px; background:#1e2530; padding:20px; border-radius:20px; border:1px solid #2d3645;">
-            <div style="color:var(--text-gray); font-size:12px; margin-bottom:10px;">Сумма в Stars</div>
-            <input type="number" id="star-input" placeholder="0" style="width:100%; background:none; border:none; color:white; font-size:40px; font-weight:800; outline:none;">
+        <div class="input-box">
+            <div style="color: #8e97a3; font-size: 12px; margin-bottom: 8px;">Введите количество Stars</div>
+            <input type="number" id="stars-val" placeholder="0">
         </div>
-        <button class="btn-main" style="margin-top: 20px; background: var(--gold); color: black;" onclick="sendPayment()">КУПИТЬ</button>
+        <button class="btn-action" onclick="sendPay()">ОПЛАТИТЬ</button>
+    </div>
+
+    <div id="modal-free" class="modal">
+        <div class="modal-header">
+            <span class="btn-close" onclick="closeModal('modal-free')">✕</span>
+            <b>БЕСПЛАТНЫЙ КЕЙС</b>
+            <div style="width:24px;"></div>
+        </div>
+        <div id="sp-list" style="flex-grow:1;">
+            </div>
+        <button class="btn-action" onclick="checkSub()">ПРОВЕРИТЬ ПОДПИСКУ</button>
     </div>
 
     <script>
@@ -120,10 +236,14 @@
         tg.expand();
 
         // Данные юзера
-        document.getElementById('user-name').innerText = tg.initDataUnsafe.user?.first_name || "Игрок";
-        document.getElementById('user-initial').innerText = (tg.initDataUnsafe.user?.first_name || "P").charAt(0);
+        const user = tg.initDataUnsafe.user;
+        if(user) {
+            document.getElementById('username').innerText = user.first_name;
+            document.getElementById('avatar').innerText = user.first_name.charAt(0);
+        }
 
-        const assets = [
+        // Лента дропов
+        const imgs = [
             'https://img.icons8.com/color/512/red-rose.png',
             'https://img.icons8.com/color/512/diamond--v1.png',
             'https://img.icons8.com/color/512/trophy.png',
@@ -131,51 +251,44 @@
         ];
 
         function addDrop() {
-            const container = document.getElementById('live-drops');
-            const item = document.createElement('div');
-            item.className = 'drop-card';
-            item.innerHTML = `<img src="${assets[Math.floor(Math.random()*assets.length)]}">`;
-            container.prepend(item);
-            if(container.children.length > 10) container.lastChild.remove();
+            const d = document.getElementById('drops');
+            const i = document.createElement('div');
+            i.className = 'drop-icon';
+            i.innerHTML = `<img src="${imgs[Math.floor(Math.random()*imgs.length)]}">`;
+            d.prepend(i);
+            if(d.children.length > 10) d.lastChild.remove();
         }
         setInterval(addDrop, 3000);
-        for(let i=0; i<6; i++) addDrop();
+        for(let x=0; x<7; x++) addDrop();
 
         function openModal(id) { 
             tg.HapticFeedback.impactOccurred('medium');
             document.getElementById(id).classList.add('active'); 
         }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function haptic() { tg.HapticFeedback.selectionChanged(); }
 
-        function sendPayment() {
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.sendData("pay:" + document.getElementById('star-input').value);
+        function sendPay() {
+            const v = document.getElementById('stars-val').value;
+            if(v > 0) tg.sendData("pay:" + v);
         }
 
-        function confirmSub() {
-            tg.HapticFeedback.selectionChanged();
-            tg.sendData("action:check_sub");
-        }
+        function checkSub() { tg.sendData("action:check_sub"); }
 
-        function renderSponsors() {
-            const container = document.getElementById('sponsor-list');
-            const params = new URLSearchParams(window.location.search);
-            const spData = params.get('sp');
-            if(spData) {
-                spData.split('|').forEach(data => {
-                    const [name, link] = data.split(';');
-                    const card = document.createElement('div');
-                    card.style = "background:#1e2530; padding:15px; border-radius:15px; display:flex; justify-content:space-between; margin-bottom:10px; border:1px solid #2d3645;";
-                    card.onclick = () => {
-                        tg.HapticFeedback.impactOccurred('light');
-                        tg.openTelegramLink(link);
-                    };
-                    card.innerHTML = `<b>${name}</b> <span style="color:var(--accent)">+</span>`;
-                    container.appendChild(card);
-                });
-            }
+        // Спонсоры из URL
+        const params = new URLSearchParams(window.location.search);
+        const sp = params.get('sp');
+        if(sp) {
+            const list = document.getElementById('sp-list');
+            sp.split('|').forEach(s => {
+                const [n, l] = s.split(';');
+                const div = document.createElement('div');
+                div.style = "background:#171c24; padding:16px; border-radius:12px; margin-bottom:10px; display:flex; justify-content:space-between; border: 1px solid #232a33;";
+                div.onclick = () => tg.openTelegramLink(l);
+                div.innerHTML = `<span>${n}</span> <span style="color:#51b5ff">→</span>`;
+                list.appendChild(div);
+            });
         }
-        renderSponsors();
     </script>
 </body>
 </html>
