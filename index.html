@@ -100,13 +100,17 @@
         currentRotation += randomSpin;
         canvas.style.transform = `rotate(${currentRotation}deg)`;
         
-        setTimeout(() => {
-            tg.showPopup({
-                title: 'Поздравляем!',
-                message: 'Вы выиграли приз! Чтобы забрать его, напишите в чат бота.',
-                buttons: [{type: 'ok'}]
-            });
-        }, 5500);
+        // Замени старый setTimeout на этот:
+setTimeout(() => {
+    // Отправляем данные боту
+    tg.sendData("win:Pepe_NFT"); 
+    
+    tg.showPopup({
+        title: 'Ура!',
+        message: 'Ты выиграл! Бот уже прислал тебе инструкции в личку.',
+        buttons: [{type: 'ok'}]
+    });
+}, 5500);
     }
 
     drawWheel();
