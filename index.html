@@ -21,8 +21,9 @@
             color: var(--text);
             font-family: -apple-system, sans-serif;
             margin: 0; padding: 0;
-            overflow-x: hidden;
+            overflow: hidden; /* Фиксируем экран, чтобы ничего не дергалось */
             user-select: none;
+            height: 100vh;
         }
 
         /* 1. Splash Screen */
@@ -32,7 +33,7 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             z-index: 1000; transition: 0.5s;
         }
-        .logo { width: 120px; height: 120px; margin-bottom: 20px; }
+        .logo { width: 100px; height: 100px; margin-bottom: 15px; border-radius: 20px; }
 
         /* 2. Header & Online */
         .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
@@ -40,7 +41,7 @@
         .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink 1.5s infinite; }
         
         .balance-card {
-            background: var(--card); padding: 6px 12px; border-radius: 12px;
+            background: var(--card); padding: 8px 15px; border-radius: 25px;
             display: flex; align-items: center; gap: 8px; border: 1px solid #2c3440;
         }
 
@@ -54,39 +55,51 @@
             min-width: 35px; height: 35px; background: var(--card);
             border-radius: 6px; display: flex; align-items: center; justify-content: center;
             border-bottom: 2px solid var(--accent);
-            animation: slideIn 0.5s ease-out;
+            animation: slideIn 0.5s ease-out; font-size: 20px;
         }
 
-        /* 4. Menu Items */
+        /* 4. Cards & Menu */
         .section-label { padding: 20px 15px 10px; font-size: 12px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
         .big-card {
-            margin: 0 15px 15px; background: var(--card); padding: 20px;
+            margin: 0 15px 12px; background: var(--card); padding: 18px;
             border-radius: 16px; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid #242933; position: relative; overflow: hidden;
+            border: 1px solid #242933; transition: 0.2s;
         }
-        .free-case-btn { background: linear-gradient(90deg, #1e3c72, #2a5298); border: none; }
+        .big-card:active { transform: scale(0.98); background: #1f232d; }
+        .free-case-btn { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; }
 
-        /* 5. Deposit Modal */
-        .modal {
-            position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%;
+        /* 5. Modals (Deposit & Screens) */
+        .modal-screen {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%;
             background: var(--bg); z-index: 900; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 20px; box-sizing: border-box; border-top: 1px solid #2c3440;
-            border-radius: 20px 20px 0 0;
+            padding: 20px; box-sizing: border-box; display: flex; flex-direction: column;
         }
-        .modal.active { bottom: 0; }
+        .modal-screen.active { bottom: 0; }
+
+        /* 6. Improved Input field */
+        .input-container {
+            margin: 20px 0;
+            background: #1c212a;
+            border: 2px solid #2c3440;
+            border-radius: 15px;
+            padding: 10px;
+        }
         .input-stars {
-            width: 100%; background: var(--card); border: 2px solid #2c3440;
-            padding: 20px; border-radius: 15px; color: var(--gold);
-            font-size: 32px; text-align: center; outline: none; margin-bottom: 20px;
+            width: 100%; background: transparent; border: none;
+            color: var(--gold); font-size: 32px; text-align: center; outline: none;
+            padding: 10px 0; font-weight: bold;
         }
-        .input-stars:focus { border-color: var(--accent); }
+
         .pay-btn {
             width: 100%; padding: 18px; border-radius: 15px; border: none;
-            font-size: 18px; font-weight: bold; color: white; background: #444; transition: 0.3s;
+            font-size: 18px; font-weight: bold; color: white; background: #2c3440; transition: 0.3s;
         }
-        .pay-btn.enabled { background: var(--accent); box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4); }
+        .pay-btn.enabled { background: var(--accent); }
 
-        @keyframes blink { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        .btn-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+        .grid-btn { background: #242a35; border: 1px solid #2c3440; color: white; padding: 12px; border-radius: 10px; font-weight: 600; }
+
+        @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
         @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
@@ -94,7 +107,7 @@
 
     <div id="splash">
         <img src="logo.png" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968804.png'">
-        <div class="logo-placeholder">GIFT MARKET</div>
+        <div style="font-weight: bold; letter-spacing: 2px;">GIFT MARKET</div>
     </div>
 
     <div class="header">
@@ -102,89 +115,119 @@
             <div class="online-dot"></div>
             Онлайн: <span id="online-count">1482</span>
         </div>
-        <div class="balance-card" onclick="toggleModal('deposit-modal', true)">
-            <img src="star.png" width="18" onerror="this.style.display='none'">
+        <div class="balance-card" onclick="openDeposit()">
             <span>⭐ <span id="balance">0</span></span>
-            <div style="margin-left:8px; color:var(--accent); font-weight:bold;">+</div>
+            <div style="margin-left:5px; color:var(--accent); font-weight:bold; font-size:18px;">+</div>
         </div>
     </div>
 
     <div class="live-drops" id="live-drops"></div>
 
-    <div class="section-label">Акция</div>
+    <div class="section-label">Эксклюзив</div>
     <div class="big-card free-case-btn" onclick="openFreeCase()">
         <div>
-            <div style="font-weight:bold; font-size:18px;">Бесплатный кейс</div>
-            <div style="font-size:12px; opacity:0.8;">Подпишись и получи подарок</div>
+            <div style="font-weight:bold; font-size:17px;">Бесплатный кейс</div>
+            <div style="font-size:12px; opacity:0.8;">За подписку на спонсоров</div>
         </div>
         <div style="font-size:30px;">🎁</div>
     </div>
 
-    <div class="section-label">Игры и кейсы</div>
-    <div class="big-card" onclick="alert('Скоро!')">
-        <div>📦 Все кейсы</div>
+    <div class="section-label">Игры</div>
+    <div class="big-card" onclick="alert('Раздел в разработке')">
+        <span>📦 Кейсы</span>
         <span>→</span>
     </div>
-    <div class="big-card" style="border-left: 4px solid var(--red);" onclick="alert('Скоро!')">
-        <div>🚀 Ракетка (Crash)</div>
-        <span style="color:var(--red);">LIVE</span>
+    <div class="big-card" style="border-left: 4px solid var(--red);" onclick="alert('Ракетка скоро появится!')">
+        <span>🚀 Ракетка</span>
+        <span style="color:var(--red); font-size:12px; font-weight:bold;">COMING SOON</span>
     </div>
 
-    <div id="deposit-modal" class="modal">
-        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+    <div id="deposit-screen" class="modal-screen">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 style="margin:0;">Пополнение Stars</h3>
-            <div onclick="toggleModal('deposit-modal', false)" style="font-size:24px; color:var(--text-gray);">✕</div>
+            <div onclick="closeModal('deposit-screen')" style="font-size:24px; padding:10px;">✕</div>
         </div>
         
-        <input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()">
+        <div class="input-container">
+            <input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()">
+        </div>
         
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
-            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(200)">+200</button>
-            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(500)">+500</button>
-            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(1000)">+1000</button>
-            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(50)">MIN (50)</button>
+        <div class="btn-grid">
+            <button class="grid-btn" onclick="setStars(50)">MIN (50)</button>
+            <button class="grid-btn" onclick="setStars(200)">200</button>
+            <button class="grid-btn" onclick="setStars(500)">500</button>
+            <button class="grid-btn" onclick="setStars(1000)">1000</button>
         </div>
 
         <button id="pay-button" class="pay-btn" onclick="sendPayment()" disabled>ОПЛАТИТЬ</button>
+    </div>
+
+    <div id="free-case-screen" class="modal-screen">
+        <div style="display:flex; justify-content:space-between; align-items: center;">
+            <button onclick="closeModal('free-case-screen')" style="background:none; border:none; color:white; font-size:26px;">←</button>
+            <h3 style="margin:0;">GIFT CASE</h3>
+            <div></div>
+        </div>
+
+        <div style="text-align:center; padding: 40px 0;">
+            <div style="font-size:80px; margin-bottom:10px;">🎁</div>
+            <p style="color:var(--text-gray); font-size:14px; padding: 0 20px;">Подпишись на каналы наших спонсоров, чтобы получить доступ к кейсу</p>
+        </div>
+
+        <div class="section-label">Спонсоры</div>
+        <div class="big-card" onclick="window.open('https://t.me/твой_канал_1')">
+            <span>📢 Канал Спонсора #1</span>
+            <span style="color:var(--accent); font-weight:bold;">GO</span>
+        </div>
+        <div class="big-card" onclick="window.open('https://t.me/твой_канал_2')">
+            <span>📢 Канал Спонсора #2</span>
+            <span style="color:var(--accent); font-weight:bold;">GO</span>
+        </div>
+
+        <div style="margin-top:auto; padding-bottom:20px;">
+            <button class="pay-btn enabled" onclick="confirmSub()">ПРОВЕРИТЬ ПОДПИСКУ</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 1. Управление заставкой
+        // Splash screen delay
         setTimeout(() => {
-            document.getElementById('splash').style.opacity = '0';
-            setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+            const sp = document.getElementById('splash');
+            sp.style.opacity = '0';
+            setTimeout(() => sp.style.display = 'none', 500);
         }, 2000);
 
-        // 2. Реалистичный онлайн
+        // Real-time Online
         setInterval(() => {
             let count = parseInt(document.getElementById('online-count').innerText);
             let change = Math.floor(Math.random() * 5) - 2;
             document.getElementById('online-count').innerText = (count + change);
         }, 3000);
 
-        // 3. Живая лента дропов
-        const dropIcons = ['🌹','🍓','💍','🐸','🏆','🚬','🧤','💎'];
+        // Live Drop Feed
+        const icons = ['🌹','🍓','💍','🐸','🏆','🚬','🧤','💎'];
         function addDrop() {
             const container = document.getElementById('live-drops');
             const item = document.createElement('div');
             item.className = 'drop-item';
-            item.innerHTML = dropIcons[Math.floor(Math.random()*dropIcons.length)];
+            item.innerHTML = icons[Math.floor(Math.random()*icons.length)];
             container.prepend(item);
-            if(container.children.length > 15) container.lastChild.remove();
+            if(container.children.length > 12) container.lastChild.remove();
         }
-        setInterval(addDrop, 4000); // Новый дроп каждые 4 сек
+        setInterval(addDrop, 3500);
         for(let i=0; i<8; i++) addDrop();
 
-        // 4. Логика пополнения
-        function toggleModal(id, show) {
-            document.getElementById(id).classList.toggle('active', show);
-        }
+        // Navigation
+        function openDeposit() { document.getElementById('deposit-screen').classList.add('active'); }
+        function openFreeCase() { document.getElementById('free-case-screen').classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function setStars(val) {
-            document.getElementById('star-input').value = val;
+        // Logic for Input
+        function setStars(v) {
+            document.getElementById('star-input').value = v;
             validateInput();
         }
 
@@ -203,15 +246,9 @@
         function sendPayment() {
             const val = document.getElementById('star-input').value;
             tg.sendData("pay:" + val);
-            toggleModal('deposit-modal', false);
         }
 
-        function openFreeCase() {
-            tg.showPopup({
-                title: "Бесплатный кейс",
-                message: "Для открытия подпишись на каналы спонсоров в боте.",
-                buttons: [{type: "ok"}]
-            });
+        function confirmSub() {
             tg.sendData("action:check_sub");
         }
     </script>
