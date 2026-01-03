@@ -6,222 +6,214 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #0f1218;
-            --card: #1c212a;
+            --bg: #0b0e12;
+            --card: #171a21;
             --accent: #0088cc;
             --gold: #ffca28;
+            --green: #4caf50;
             --red: #ff4b4b;
+            --text: #ffffff;
+            --text-gray: #8e97a4;
         }
 
         body {
             background-color: var(--bg);
-            color: white;
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
+            color: var(--text);
+            font-family: -apple-system, sans-serif;
+            margin: 0; padding: 0;
             overflow-x: hidden;
+            user-select: none;
         }
 
         /* 1. Splash Screen */
         #splash {
-            position: fixed;
-            top:0; left:0; width:100%; height:100%;
+            position: fixed; top:0; left:0; width:100%; height:100%;
             background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1000; transition: 0.5s;
         }
-        .logo-placeholder {
-            font-size: 24px;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
+        .logo { width: 120px; height: 120px; margin-bottom: 20px; }
 
-        /* 2. Header & Balance */
-        .header {
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* 2. Header & Online */
+        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .online-box { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-gray); }
+        .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink 1.5s infinite; }
+        
         .balance-card {
-            background: var(--card);
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border: 1px solid #2c3440;
-        }
-        .plus-btn {
-            background: var(--accent);
-            width: 24px; height: 24px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            background: var(--card); padding: 6px 12px; border-radius: 12px;
+            display: flex; align-items: center; gap: 8px; border: 1px solid #2c3440;
         }
 
-        /* 3. Live Drop */
-        .live-drop {
-            height: 40px;
-            background: rgba(0,0,0,0.2);
-            overflow: hidden;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
+        /* 3. Live Drops */
+        .live-drops {
+            height: 50px; background: rgba(0,0,0,0.3); 
+            display: flex; align-items: center; gap: 10px; padding: 0 10px;
+            overflow: hidden; position: relative; border-bottom: 1px solid #1c212a;
         }
-        .drop-track {
-            display: flex;
-            gap: 10px;
-            animation: scroll-left 20s linear infinite;
-        }
-        .mini-nft { width: 30px; height: 30px; border-radius: 5px; background: var(--card); border-bottom: 2px solid var(--accent); }
-
-        /* 2.1 Deposit Menu */
-        #deposit-modal {
-            position: fixed;
-            bottom: -100%;
-            left: 0;
-            width: 100%;
-            height: 90%;
-            background: var(--bg);
-            z-index: 500;
-            transition: 0.3s;
-            border-top: 1px solid #2c3440;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .modal-active { bottom: 0 !important; }
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab { flex: 1; padding: 10px; text-align: center; background: var(--card); border-radius: 10px; }
-        .tab.active { border-bottom: 2px solid var(--accent); }
-
-        .star-input-container { text-align: center; margin: 40px 0; }
-        .star-count { font-size: 48px; color: var(--gold); }
-        .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .preset-btn { background: var(--card); border: 1px solid #343d4c; padding: 15px; border-radius: 10px; color: white; }
-
-        /* Main Content */
-        .section-title { padding: 0 15px; color: #8e97a4; font-size: 14px; text-transform: uppercase; margin-top: 20px;}
-        .menu-item {
-            margin: 10px 15px;
-            background: var(--card);
-            padding: 20px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--accent);
+        .drop-item {
+            min-width: 35px; height: 35px; background: var(--card);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center;
+            border-bottom: 2px solid var(--accent);
+            animation: slideIn 0.5s ease-out;
         }
 
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-        @keyframes scroll-left { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        /* 4. Menu Items */
+        .section-label { padding: 20px 15px 10px; font-size: 12px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
+        .big-card {
+            margin: 0 15px 15px; background: var(--card); padding: 20px;
+            border-radius: 16px; display: flex; justify-content: space-between; align-items: center;
+            border: 1px solid #242933; position: relative; overflow: hidden;
+        }
+        .free-case-btn { background: linear-gradient(90deg, #1e3c72, #2a5298); border: none; }
+
+        /* 5. Deposit Modal */
+        .modal {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 85%;
+            background: var(--bg); z-index: 900; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px; box-sizing: border-box; border-top: 1px solid #2c3440;
+            border-radius: 20px 20px 0 0;
+        }
+        .modal.active { bottom: 0; }
+        .input-stars {
+            width: 100%; background: var(--card); border: 2px solid #2c3440;
+            padding: 20px; border-radius: 15px; color: var(--gold);
+            font-size: 32px; text-align: center; outline: none; margin-bottom: 20px;
+        }
+        .input-stars:focus { border-color: var(--accent); }
+        .pay-btn {
+            width: 100%; padding: 18px; border-radius: 15px; border: none;
+            font-size: 18px; font-weight: bold; color: white; background: #444; transition: 0.3s;
+        }
+        .pay-btn.enabled { background: var(--accent); box-shadow: 0 4px 15px rgba(0, 136, 204, 0.4); }
+
+        @keyframes blink { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="splash">
-        <div class="logo-placeholder">YOUR LOGO</div>
+        <img src="logo.png" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968804.png'">
+        <div class="logo-placeholder">GIFT MARKET</div>
     </div>
 
     <div class="header">
-        <div class="balance-card" onclick="openDeposit()">
-            <span>⭐ <span id="user-balance">0</span></span>
-            <div class="plus-btn">+</div>
+        <div class="online-box">
+            <div class="online-dot"></div>
+            Онлайн: <span id="online-count">1482</span>
+        </div>
+        <div class="balance-card" onclick="toggleModal('deposit-modal', true)">
+            <img src="star.png" width="18" onerror="this.style.display='none'">
+            <span>⭐ <span id="balance">0</span></span>
+            <div style="margin-left:8px; color:var(--accent); font-weight:bold;">+</div>
         </div>
     </div>
 
-    <div class="live-drop">
-        <div class="drop-track" id="live-track"></div>
-    </div>
+    <div class="live-drops" id="live-drops"></div>
 
-    <div class="menu-item" onclick="openPage('free')">
+    <div class="section-label">Акция</div>
+    <div class="big-card free-case-btn" onclick="openFreeCase()">
         <div>
-            <div style="font-weight: bold;">Бесплатный кейс</div>
-            <div style="font-size: 12px; color: #8e97a4;">За подписку на спонсоров</div>
+            <div style="font-weight:bold; font-size:18px;">Бесплатный кейс</div>
+            <div style="font-size:12px; opacity:0.8;">Подпишись и получи подарок</div>
         </div>
-        <span>🎁</span>
+        <div style="font-size:30px;">🎁</div>
     </div>
 
-    <div class="section-title">Игры</div>
-    <div class="menu-item" onclick="openPage('cases')">
-        <span>📦 Кейсы</span>
+    <div class="section-label">Игры и кейсы</div>
+    <div class="big-card" onclick="alert('Скоро!')">
+        <div>📦 Все кейсы</div>
         <span>→</span>
     </div>
-    <div class="menu-item" onclick="openPage('rocket')" style="border-left-color: var(--red);">
-        <span>🚀 Ракетка (Crash)</span>
-        <span>→</span>
+    <div class="big-card" style="border-left: 4px solid var(--red);" onclick="alert('Скоро!')">
+        <div>🚀 Ракетка (Crash)</div>
+        <span style="color:var(--red);">LIVE</span>
     </div>
 
-    <div id="deposit-modal">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3>Пополнение</h3>
-            <div onclick="closeDeposit()" style="font-size: 24px;">✕</div>
-        </div>
-        <div class="tabs">
-            <div class="tab active">STARS</div>
-            <div class="tab">GIFTS</div>
+    <div id="deposit-modal" class="modal">
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+            <h3 style="margin:0;">Пополнение Stars</h3>
+            <div onclick="toggleModal('deposit-modal', false)" style="font-size:24px; color:var(--text-gray);">✕</div>
         </div>
         
-        <div id="stars-section">
-            <div class="star-input-container">
-                <div class="star-count" id="star-val">0</div>
-                <div style="color: #8e97a4;">звёзд</div>
-            </div>
-            <div class="preset-grid">
-                <button class="preset-btn" onclick="addStars(200)">+200</button>
-                <button class="preset-btn" onclick="addStars(500)">+500</button>
-                <button class="preset-btn" onclick="addStars(1000)">+1000</button>
-                <button class="preset-btn" onclick="setStars(50)">MIN (50)</button>
-            </div>
-            <button onclick="pay()" style="width: 100%; background: var(--accent); border: none; padding: 18px; color: white; border-radius: 12px; margin-top: 20px; font-weight: bold;">ОПЛАТИТЬ</button>
+        <input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()">
+        
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:20px;">
+            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(200)">+200</button>
+            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(500)">+500</button>
+            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(1000)">+1000</button>
+            <button class="pay-btn enabled" style="font-size:14px; padding:10px;" onclick="setStars(50)">MIN (50)</button>
         </div>
+
+        <button id="pay-button" class="pay-btn" onclick="sendPayment()" disabled>ОПЛАТИТЬ</button>
     </div>
 
-<script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-    // 1. Splash Logic
-    setTimeout(() => {
-        document.getElementById('splash').style.display = 'none';
-    }, 2000);
+        // 1. Управление заставкой
+        setTimeout(() => {
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+        }, 2000);
 
-    // 3. Live Drop Generator
-    const track = document.getElementById('live-track');
-    const icons = ['🐌','📦','💎','🐸','🧤','🔫','⌚'];
-    for(let i=0; i<40; i++) {
-        const item = document.createElement('div');
-        item.className = 'mini-nft';
-        item.style.display = 'flex';
-        item.style.alignItems = 'center';
-        item.style.justifyContent = 'center';
-        item.innerHTML = icons[Math.floor(Math.random()*icons.length)];
-        track.appendChild(item);
-    }
+        // 2. Реалистичный онлайн
+        setInterval(() => {
+            let count = parseInt(document.getElementById('online-count').innerText);
+            let change = Math.floor(Math.random() * 5) - 2;
+            document.getElementById('online-count').innerText = (count + change);
+        }, 3000);
 
-    // 2. Deposit Logic
-    let starAmount = 0;
-    function openDeposit() { document.getElementById('deposit-modal').classList.add('modal-active'); }
-    function closeDeposit() { document.getElementById('deposit-modal').classList.remove('modal-active'); }
-    
-    function addStars(num) { starAmount += num; updateStars(); }
-    function setStars(num) { starAmount = num; updateStars(); }
-    function updateStars() { document.getElementById('star-val').innerText = starAmount; }
+        // 3. Живая лента дропов
+        const dropIcons = ['🌹','🍓','💍','🐸','🏆','🚬','🧤','💎'];
+        function addDrop() {
+            const container = document.getElementById('live-drops');
+            const item = document.createElement('div');
+            item.className = 'drop-item';
+            item.innerHTML = dropIcons[Math.floor(Math.random()*dropIcons.length)];
+            container.prepend(item);
+            if(container.children.length > 15) container.lastChild.remove();
+        }
+        setInterval(addDrop, 4000); // Новый дроп каждые 4 сек
+        for(let i=0; i<8; i++) addDrop();
 
-    function pay() {
-        if(starAmount < 50) return alert("Минимум 50 звезд");
-        tg.sendData("pay:" + starAmount);
-    }
+        // 4. Логика пополнения
+        function toggleModal(id, show) {
+            document.getElementById(id).classList.toggle('active', show);
+        }
 
-    // Navigation
-    function openPage(page) {
-        tg.showPopup({ message: "Переход в раздел " + page + " (в разработке)" });
-    }
-</script>
+        function setStars(val) {
+            document.getElementById('star-input').value = val;
+            validateInput();
+        }
+
+        function validateInput() {
+            const val = parseInt(document.getElementById('star-input').value);
+            const btn = document.getElementById('pay-button');
+            if(val >= 50) {
+                btn.classList.add('enabled');
+                btn.disabled = false;
+            } else {
+                btn.classList.remove('enabled');
+                btn.disabled = true;
+            }
+        }
+
+        function sendPayment() {
+            const val = document.getElementById('star-input').value;
+            tg.sendData("pay:" + val);
+            toggleModal('deposit-modal', false);
+        }
+
+        function openFreeCase() {
+            tg.showPopup({
+                title: "Бесплатный кейс",
+                message: "Для открытия подпишись на каналы спонсоров в боте.",
+                buttons: [{type: "ok"}]
+            });
+            tg.sendData("action:check_sub");
+        }
+    </script>
 </body>
 </html>
