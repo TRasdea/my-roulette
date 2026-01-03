@@ -6,158 +6,157 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg: #0b0e12; --card: #171a21; --accent: #0088cc;
-            --gold: #ffca28; --green: #4caf50; --red: #ff4b4b;
-            --text: #ffffff; --text-gray: #8e97a4;
+            --bg: #0f1218; --card: #1c212a; --accent: #31a6ff;
+            --gold: #fbc02d; --text: #ffffff; --text-gray: #94a3b8;
+            --gradient: linear-gradient(145deg, #1c212a, #14171d);
         }
-        body { background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 0; overflow: hidden; user-select: none; height: 100vh; }
-        
-        /* Splash Screen */
-        #splash { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
-        .splash-logo { width: 80px; height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--accent)); }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
-        /* Header */
-        .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .online-box { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-gray); }
-        .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink 1.5s infinite; }
-        .balance-card { background: var(--card); padding: 8px 15px; border-radius: 25px; display: flex; align-items: center; gap: 8px; border: 1px solid #2c3440; }
+        /* Шапка в стиле OneCase */
+        .header { padding: 20px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; border: 2px solid #2d3645; }
+        .balance-pill { background: #1e2530; padding: 6px 12px; border-radius: 12px; border: 1px solid #2d3645; display: flex; align-items: center; gap: 6px; font-weight: 600; }
 
-        /* Live Drops */
-        .live-drops { height: 60px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: hidden; border-bottom: 1px solid #1c212a; }
-        .drop-item { min-width: 45px; height: 45px; background: var(--card); border-radius: 8px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--accent); animation: slideIn 0.5s ease-out; }
-        .drop-item img { width: 32px; height: 32px; object-fit: contain; }
+        /* Лента дропов (компактная) */
+        .live-label { font-size: 10px; color: var(--accent); font-weight: 800; padding: 0 15px; text-transform: uppercase; }
+        .drops-container { height: 50px; display: flex; align-items: center; gap: 8px; padding: 0 15px; overflow: hidden; margin-top: 5px; }
+        .drop-card { min-width: 40px; height: 40px; background: var(--card); border-radius: 10px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--accent); position: relative; }
+        .drop-card img { width: 28px; height: 28px; }
 
-        /* Main Content */
-        .section-label { padding: 20px 15px 10px; font-size: 11px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
-        .big-card { margin: 0 15px 12px; background: var(--card); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #242933; transition: 0.2s; }
-        .big-card:active { transform: scale(0.98); background: #1c212a; }
-        .free-btn { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; box-shadow: 0 4px 15px rgba(30, 60, 114, 0.4); }
-        .card-img { width: 55px; height: 55px; object-fit: contain; }
+        /* Сетка кейсов (2 колонки) */
+        .cases-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
+        .case-item { background: var(--gradient); border-radius: 20px; padding: 20px; text-align: center; border: 1px solid #2d3645; position: relative; overflow: hidden; }
+        .case-item::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(49,166,255,0.1) 0%, transparent 70%); z-index: 0; }
+        .case-img { width: 80px; height: 80px; margin-bottom: 12px; position: relative; z-index: 1; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
+        .case-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; display: block; }
+        .case-price { color: var(--gold); font-weight: 800; font-size: 13px; }
 
-        /* Modals */
-        .modal-screen { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 900; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
+        /* Кнопки и модалки */
+        .modal-screen { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); display: flex; flex-direction: column; }
         .modal-screen.active { bottom: 0; }
-        .close-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        /* Inputs */
-        .input-container { margin: 20px 0; background: #1c212a; border: 2px solid #2c3440; border-radius: 15px; padding: 5px; }
-        .input-stars { width: 100%; background: transparent; border: none; color: var(--gold); font-size: 32px; text-align: center; outline: none; padding: 10px; font-weight: bold; }
+        .btn-main { width: 100%; padding: 16px; border-radius: 16px; border: none; background: var(--accent); color: white; font-weight: 700; font-size: 16px; margin-top: auto; }
 
-        .pay-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; color: white; background: #2c3440; cursor: pointer; }
-        .pay-btn.enabled { background: var(--accent); }
-
-        @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div id="splash">
-        <img src="https://img.icons8.com/color/512/gift--v1.png" class="splash-logo">
-        <div style="font-weight:bold; letter-spacing:3px; color:var(--accent);">GIFT MARKET</div>
-    </div>
-
     <div class="header">
-        <div class="online-box"><div class="online-dot"></div>Онлайн: <span id="online-count">1482</span></div>
-        <div class="balance-card" onclick="openModal('deposit-screen')">⭐ <span id="balance">0</span> <span style="color:var(--accent); font-weight:bold; font-size:20px;">+</span></div>
-    </div>
-
-    <div class="live-drops" id="live-drops"></div>
-
-    <div class="section-label">Эксклюзивные предложения</div>
-    <div class="big-card free-btn" onclick="openModal('free-case-screen')">
-        <div><b style="font-size:18px;">Бесплатный кейс</b><br><small style="opacity:0.8;">За подписку на спонсоров</small></div>
-        <img src="https://img.icons8.com/color/512/gift--v1.png" class="card-img">
-    </div>
-
-    <div class="section-label">Магазин подарков</div>
-    <div class="big-card" onclick="alert('Магазин откроется скоро!')">
-        <div><b>Наборы подарков</b><br><small style="color:var(--text-gray);">Коллекции 2024</small></div>
-        <img src="https://img.icons8.com/color/512/box.png" class="card-img" style="width:45px;">
-    </div>
-
-    <div class="big-card" style="border-left: 4px solid var(--red);">
-        <div><b>Premium Розыгрыш</b><br><small style="color:var(--red);">Уже идет!</small></div>
-        <img src="https://img.icons8.com/color/512/christmas-star.png" class="card-img" style="width:45px;">
-    </div>
-
-    <div id="deposit-screen" class="modal-screen">
-        <div class="close-area"><h3>Пополнение Stars</h3><div onclick="closeModal('deposit-screen')" style="font-size:28px;">✕</div></div>
-        <div class="input-container">
-            <input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()">
-        </div>
-        <button id="pay-button" class="pay-btn" onclick="sendPayment()" disabled>КУПИТЬ ЗВЕЗДЫ</button>
-        <p style="text-align:center; color:var(--text-gray); font-size:12px; margin-top:15px;">Минимальная сумма: 50 ⭐</p>
-    </div>
-
-    <div id="free-case-screen" class="modal-screen">
-        <div class="close-area"><div onclick="closeModal('free-case-screen')" style="font-size:28px;">←</div><h3 style="margin:0;">БЕСПЛАТНЫЙ КЕЙС</h3><div></div></div>
-        <div style="text-align:center; padding: 20px 0;">
-            <img src="https://img.icons8.com/color/512/gift--v1.png" style="width:120px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
-            <p style="color:var(--text-gray); margin-top:20px;">Для открытия подпишись на каналы:</p>
-        </div>
-        <div id="sponsor-list" style="flex-grow:1; overflow-y:auto;">
+        <div class="user-info">
+            <div class="avatar" id="user-initial">?</div>
+            <div>
+                <div style="font-size: 14px; font-weight: 700;" id="user-name">Игрок</div>
+                <div style="font-size: 11px; color: var(--text-gray);">Новичок</div>
             </div>
-        <button class="pay-btn enabled" onclick="confirmSub()">ПРОВЕРИТЬ И ОТКРЫТЬ</button>
+        </div>
+        <div class="balance-pill" onclick="openModal('deposit-screen')">
+            <span style="color: var(--gold);">⭐</span>
+            <span id="balance">0</span>
+        </div>
+    </div>
+
+    <div class="live-label">● Live Drops</div>
+    <div class="drops-container" id="live-drops"></div>
+
+    <div class="section-label" style="padding: 20px 15px 5px; font-size: 12px; color: var(--text-gray); font-weight: 700;">ДОСТУПНЫЕ КЕЙСЫ</div>
+    
+    <div class="cases-grid">
+        <div class="case-item" onclick="openModal('free-case-screen')">
+            <img src="https://img.icons8.com/color/512/gift--v1.png" class="case-img">
+            <span class="case-name">Бесплатный</span>
+            <span class="case-price">0 ⭐</span>
+        </div>
+        
+        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
+            <img src="https://img.icons8.com/color/512/box.png" class="case-img">
+            <span class="case-name">Classic Box</span>
+            <span class="case-price">100 ⭐</span>
+        </div>
+
+        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
+            <img src="https://img.icons8.com/color/512/crown.png" class="case-img">
+            <span class="case-name">Elite Case</span>
+            <span class="case-price">500 ⭐</span>
+        </div>
+
+        <div class="case-item" onclick="tg.HapticFeedback.notificationOccurred('warning')">
+            <img src="https://img.icons8.com/color/512/diamond--v1.png" class="case-img">
+            <span class="case-name">Royal Drop</span>
+            <span class="case-price">1500 ⭐</span>
+        </div>
+    </div>
+
+    <div id="free-case-screen" class="modal-screen" style="padding: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span onclick="closeModal('free-case-screen')" style="font-size: 30px;">✕</span>
+            <b style="font-size:18px;">FREE CASE</b>
+            <div style="width:30px;"></div>
+        </div>
+        <div style="text-align:center; padding: 40px 0;">
+            <img src="https://img.icons8.com/color/512/gift--v1.png" style="width:140px;">
+            <h3>Выполни условия</h3>
+            <p style="color:var(--text-gray);">Подпишись на каналы партнеров, чтобы открыть этот кейс бесплатно.</p>
+        </div>
+        <div id="sponsor-list"></div>
+        <button class="btn-main" style="margin-top: 20px;" onclick="confirmSub()">ПРОВЕРИТЬ ПОДПИСКУ</button>
+    </div>
+
+    <div id="deposit-screen" class="modal-screen" style="padding: 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span onclick="closeModal('deposit-screen')" style="font-size: 30px;">✕</span>
+            <b>ПОПОЛНЕНИЕ</b>
+            <div style="width:30px;"></div>
+        </div>
+        <div style="margin-top:40px; background:#1e2530; padding:20px; border-radius:20px; border:1px solid #2d3645;">
+            <div style="color:var(--text-gray); font-size:12px; margin-bottom:10px;">Сумма в Stars</div>
+            <input type="number" id="star-input" placeholder="0" style="width:100%; background:none; border:none; color:white; font-size:40px; font-weight:800; outline:none;">
+        </div>
+        <button class="btn-main" style="margin-top: 20px; background: var(--gold); color: black;" onclick="sendPayment()">КУПИТЬ</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.enableClosingConfirmation();
 
-        // Ссылки на картинки (Подарки и Гифты)
+        // Данные юзера
+        document.getElementById('user-name').innerText = tg.initDataUnsafe.user?.first_name || "Игрок";
+        document.getElementById('user-initial').innerText = (tg.initDataUnsafe.user?.first_name || "P").charAt(0);
+
         const assets = [
             'https://img.icons8.com/color/512/red-rose.png',
             'https://img.icons8.com/color/512/diamond--v1.png',
-            'https://img.icons8.com/color/512/champagne-bottle.png',
             'https://img.icons8.com/color/512/trophy.png',
-            'https://img.icons8.com/color/512/star--v1.png',
-            'https://img.icons8.com/color/512/strawberry.png',
-            'https://img.icons8.com/color/512/ruby--v1.png',
-            'https://img.icons8.com/color/512/crown.png'
+            'https://img.icons8.com/color/512/star--v1.png'
         ];
 
-        // Убираем Splash
-        setTimeout(() => { 
-            document.getElementById('splash').style.opacity = '0';
-            setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
-        }, 2000);
-
-        // Живой онлайн
-        setInterval(() => {
-            let el = document.getElementById('online-count');
-            el.innerText = parseInt(el.innerText) + (Math.floor(Math.random() * 5) - 2);
-        }, 3000);
-
-        // Лента дропов
         function addDrop() {
             const container = document.getElementById('live-drops');
             const item = document.createElement('div');
-            item.className = 'drop-item';
-            const randomImg = assets[Math.floor(Math.random() * assets.length)];
-            item.innerHTML = `<img src="${randomImg}">`;
+            item.className = 'drop-card';
+            item.innerHTML = `<img src="${assets[Math.floor(Math.random()*assets.length)]}">`;
             container.prepend(item);
-            if(container.children.length > 12) container.lastChild.remove();
+            if(container.children.length > 10) container.lastChild.remove();
         }
-        setInterval(addDrop, 3500);
-        for(let i=0; i<8; i++) addDrop();
+        setInterval(addDrop, 3000);
+        for(let i=0; i<6; i++) addDrop();
 
-        // Управление модалками
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function openModal(id) { 
+            tg.HapticFeedback.impactOccurred('medium');
+            document.getElementById(id).classList.add('active'); 
+        }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        function validateInput() {
-            const val = document.getElementById('star-input').value;
-            const btn = document.getElementById('pay-button');
-            btn.disabled = val < 50;
-            btn.classList.toggle('enabled', val >= 50);
+        function sendPayment() {
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.sendData("pay:" + document.getElementById('star-input').value);
         }
 
-        function sendPayment() { tg.sendData("pay:" + document.getElementById('star-input').value); }
-        function confirmSub() { tg.sendData("action:check_sub"); }
+        function confirmSub() {
+            tg.HapticFeedback.selectionChanged();
+            tg.sendData("action:check_sub");
+        }
 
-        // Динамические спонсоры
         function renderSponsors() {
             const container = document.getElementById('sponsor-list');
             const params = new URLSearchParams(window.location.search);
@@ -166,13 +165,14 @@
                 spData.split('|').forEach(data => {
                     const [name, link] = data.split(';');
                     const card = document.createElement('div');
-                    card.className = 'big-card';
-                    card.onclick = () => tg.openTelegramLink(link);
-                    card.innerHTML = `<span>📢 ${name}</span><span style="color:var(--accent); font-weight:bold;">ПОДПИСАТЬСЯ</span>`;
+                    card.style = "background:#1e2530; padding:15px; border-radius:15px; display:flex; justify-content:space-between; margin-bottom:10px; border:1px solid #2d3645;";
+                    card.onclick = () => {
+                        tg.HapticFeedback.impactOccurred('light');
+                        tg.openTelegramLink(link);
+                    };
+                    card.innerHTML = `<b>${name}</b> <span style="color:var(--accent)">+</span>`;
                     container.appendChild(card);
                 });
-            } else {
-                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); margin-top:20px;">Спонсоров пока нет</p>';
             }
         }
         renderSponsors();
