@@ -12,104 +12,167 @@
         }
         body { background-color: var(--bg); color: var(--text); font-family: -apple-system, sans-serif; margin: 0; padding: 0; overflow: hidden; user-select: none; height: 100vh; }
         
-        /* Splash */
+        /* Splash Screen */
         #splash { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: 0.5s; }
-        .logo { width: 100px; height: 100px; border-radius: 20px; margin-bottom: 15px; }
+        .splash-logo { width: 80px; height: 80px; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--accent)); }
 
-        /* Header & Elements */
+        /* Header */
         .header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
         .online-box { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-gray); }
         .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink 1.5s infinite; }
         .balance-card { background: var(--card); padding: 8px 15px; border-radius: 25px; display: flex; align-items: center; gap: 8px; border: 1px solid #2c3440; }
-        .live-drops { height: 50px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: hidden; border-bottom: 1px solid #1c212a; }
-        .drop-item { min-width: 35px; height: 35px; background: var(--card); border-radius: 6px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--accent); animation: slideIn 0.5s ease-out; font-size: 20px; }
 
-        /* Cards */
-        .section-label { padding: 20px 15px 10px; font-size: 12px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
-        .big-card { margin: 0 15px 12px; background: var(--card); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #242933; }
-        .free-case-btn { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; }
+        /* Live Drops */
+        .live-drops { height: 60px; background: rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; padding: 0 10px; overflow: hidden; border-bottom: 1px solid #1c212a; }
+        .drop-item { min-width: 45px; height: 45px; background: var(--card); border-radius: 8px; display: flex; align-items: center; justify-content: center; border-bottom: 2px solid var(--accent); animation: slideIn 0.5s ease-out; }
+        .drop-item img { width: 32px; height: 32px; object-fit: contain; }
+
+        /* Main Content */
+        .section-label { padding: 20px 15px 10px; font-size: 11px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; }
+        .big-card { margin: 0 15px 12px; background: var(--card); padding: 18px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #242933; transition: 0.2s; }
+        .big-card:active { transform: scale(0.98); background: #1c212a; }
+        .free-btn { background: linear-gradient(135deg, #1e3c72, #2a5298); border: none; box-shadow: 0 4px 15px rgba(30, 60, 114, 0.4); }
+        .card-img { width: 55px; height: 55px; object-fit: contain; }
 
         /* Modals */
         .modal-screen { position: fixed; bottom: -100%; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 900; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; }
         .modal-screen.active { bottom: 0; }
-        .input-container { margin: 20px 0; background: #1c212a; border: 2px solid #2c3440; border-radius: 15px; padding: 10px; }
-        .input-stars { width: 100%; background: transparent; border: none; color: var(--gold); font-size: 32px; text-align: center; outline: none; font-weight: bold; }
-        .pay-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; color: white; background: #2c3440; }
+        .close-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        /* Inputs */
+        .input-container { margin: 20px 0; background: #1c212a; border: 2px solid #2c3440; border-radius: 15px; padding: 5px; }
+        .input-stars { width: 100%; background: transparent; border: none; color: var(--gold); font-size: 32px; text-align: center; outline: none; padding: 10px; font-weight: bold; }
+
+        .pay-btn { width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 18px; font-weight: bold; color: white; background: #2c3440; cursor: pointer; }
         .pay-btn.enabled { background: var(--accent); }
 
         @keyframes blink { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
-        @keyframes slideIn { from { transform: translateX(50px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body>
-    <div id="splash"><img src="logo.png" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5968/5968804.png'"><b>GIFT MARKET</b></div>
+
+    <div id="splash">
+        <img src="https://img.icons8.com/color/512/gift--v1.png" class="splash-logo">
+        <div style="font-weight:bold; letter-spacing:3px; color:var(--accent);">GIFT MARKET</div>
+    </div>
 
     <div class="header">
         <div class="online-box"><div class="online-dot"></div>Онлайн: <span id="online-count">1482</span></div>
-        <div class="balance-card" onclick="openModal('deposit-screen')">⭐ <span id="balance">0</span> <b style="color:var(--accent); margin-left:5px;">+</b></div>
+        <div class="balance-card" onclick="openModal('deposit-screen')">⭐ <span id="balance">0</span> <span style="color:var(--accent); font-weight:bold; font-size:20px;">+</span></div>
     </div>
+
     <div class="live-drops" id="live-drops"></div>
 
-    <div class="section-label">Эксклюзив</div>
-    <div class="big-card free-case-btn" onclick="openModal('free-case-screen')">
-        <div><b>Бесплатный кейс</b><br><small>За подписку</small></div><div style="font-size:30px;">🎁</div>
+    <div class="section-label">Эксклюзивные предложения</div>
+    <div class="big-card free-btn" onclick="openModal('free-case-screen')">
+        <div><b style="font-size:18px;">Бесплатный кейс</b><br><small style="opacity:0.8;">За подписку на спонсоров</small></div>
+        <img src="https://img.icons8.com/color/512/gift--v1.png" class="card-img">
     </div>
 
-    <div class="section-label">Игры</div>
-    <div class="big-card" onclick="alert('Скоро!')"><span>📦 Кейсы</span><span>→</span></div>
-    <div class="big-card" style="border-left:4px solid var(--red)"><span>🚀 Ракетка</span><span style="color:var(--red); font-size:10px;">SOON</span></div>
+    <div class="section-label">Магазин подарков</div>
+    <div class="big-card" onclick="alert('Магазин откроется скоро!')">
+        <div><b>Наборы подарков</b><br><small style="color:var(--text-gray);">Коллекции 2024</small></div>
+        <img src="https://img.icons8.com/color/512/box.png" class="card-img" style="width:45px;">
+    </div>
+
+    <div class="big-card" style="border-left: 4px solid var(--red);">
+        <div><b>Premium Розыгрыш</b><br><small style="color:var(--red);">Уже идет!</small></div>
+        <img src="https://img.icons8.com/color/512/christmas-star.png" class="card-img" style="width:45px;">
+    </div>
 
     <div id="deposit-screen" class="modal-screen">
-        <div style="display:flex; justify-content:space-between;"><h3>Пополнение</h3><div onclick="closeModal('deposit-screen')" style="font-size:24px;">✕</div></div>
-        <div class="input-container"><input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()"></div>
-        <button id="pay-button" class="pay-btn" onclick="sendPayment()" disabled>ОПЛАТИТЬ</button>
+        <div class="close-area"><h3>Пополнение Stars</h3><div onclick="closeModal('deposit-screen')" style="font-size:28px;">✕</div></div>
+        <div class="input-container">
+            <input type="number" id="star-input" class="input-stars" placeholder="0" oninput="validateInput()">
+        </div>
+        <button id="pay-button" class="pay-btn" onclick="sendPayment()" disabled>КУПИТЬ ЗВЕЗДЫ</button>
+        <p style="text-align:center; color:var(--text-gray); font-size:12px; margin-top:15px;">Минимальная сумма: 50 ⭐</p>
     </div>
 
     <div id="free-case-screen" class="modal-screen">
-        <div style="display:flex; justify-content:space-between;"><button onclick="closeModal('free-case-screen')" style="background:none; border:none; color:white; font-size:24px;">←</button><h3>GIFT CASE</h3><div></div></div>
-        <p style="text-align:center; color:var(--text-gray); margin: 30px 0;">Подпишись на каналы спонсоров:</p>
-        <div id="sponsor-list"></div>
-        <button class="pay-btn enabled" style="margin-top:auto;" onclick="confirmSub()">ПРОВЕРИТЬ</button>
+        <div class="close-area"><div onclick="closeModal('free-case-screen')" style="font-size:28px;">←</div><h3 style="margin:0;">БЕСПЛАТНЫЙ КЕЙС</h3><div></div></div>
+        <div style="text-align:center; padding: 20px 0;">
+            <img src="https://img.icons8.com/color/512/gift--v1.png" style="width:120px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));">
+            <p style="color:var(--text-gray); margin-top:20px;">Для открытия подпишись на каналы:</p>
+        </div>
+        <div id="sponsor-list" style="flex-grow:1; overflow-y:auto;">
+            </div>
+        <button class="pay-btn enabled" onclick="confirmSub()">ПРОВЕРИТЬ И ОТКРЫТЬ</button>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp; tg.expand();
-        setTimeout(() => { document.getElementById('splash').style.opacity='0'; setTimeout(()=>document.getElementById('splash').style.display='none', 500); }, 2000);
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
 
-        // Онлайн и Дропы
-        setInterval(() => { let c = document.getElementById('online-count'); c.innerText = parseInt(c.innerText) + (Math.floor(Math.random()*5)-2); }, 3000);
-        function addDrop() { 
+        // Ссылки на картинки (Подарки и Гифты)
+        const assets = [
+            'https://img.icons8.com/color/512/red-rose.png',
+            'https://img.icons8.com/color/512/diamond--v1.png',
+            'https://img.icons8.com/color/512/champagne-bottle.png',
+            'https://img.icons8.com/color/512/trophy.png',
+            'https://img.icons8.com/color/512/star--v1.png',
+            'https://img.icons8.com/color/512/strawberry.png',
+            'https://img.icons8.com/color/512/ruby--v1.png',
+            'https://img.icons8.com/color/512/crown.png'
+        ];
+
+        // Убираем Splash
+        setTimeout(() => { 
+            document.getElementById('splash').style.opacity = '0';
+            setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+        }, 2000);
+
+        // Живой онлайн
+        setInterval(() => {
+            let el = document.getElementById('online-count');
+            el.innerText = parseInt(el.innerText) + (Math.floor(Math.random() * 5) - 2);
+        }, 3000);
+
+        // Лента дропов
+        function addDrop() {
             const container = document.getElementById('live-drops');
-            const item = document.createElement('div'); item.className = 'drop-item';
-            item.innerHTML = ['🌹','🍓','💍','🐸','🏆','🚬'][Math.floor(Math.random()*6)];
-            container.prepend(item); if(container.children.length > 12) container.lastChild.remove();
+            const item = document.createElement('div');
+            item.className = 'drop-item';
+            const randomImg = assets[Math.floor(Math.random() * assets.length)];
+            item.innerHTML = `<img src="${randomImg}">`;
+            container.prepend(item);
+            if(container.children.length > 12) container.lastChild.remove();
         }
-        setInterval(addDrop, 3500); for(let i=0; i<8; i++) addDrop();
+        setInterval(addDrop, 3500);
+        for(let i=0; i<8; i++) addDrop();
 
-        // Модалки
+        // Управление модалками
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
         function validateInput() {
-            const v = document.getElementById('star-input').value;
+            const val = document.getElementById('star-input').value;
             const btn = document.getElementById('pay-button');
-            btn.disabled = v < 50; btn.classList.toggle('enabled', v >= 50);
+            btn.disabled = val < 50;
+            btn.classList.toggle('enabled', val >= 50);
         }
+
         function sendPayment() { tg.sendData("pay:" + document.getElementById('star-input').value); }
         function confirmSub() { tg.sendData("action:check_sub"); }
 
-        // СИНХРОНИЗАЦИЯ СПОНСОРОВ
+        // Динамические спонсоры
         function renderSponsors() {
             const container = document.getElementById('sponsor-list');
             const params = new URLSearchParams(window.location.search);
-            const data = params.get('sp');
-            if (data) {
-                data.split('|').forEach(sp => {
-                    const [name, link] = sp.split(';');
-                    const div = document.createElement('div'); div.className = 'big-card';
-                    div.onclick = () => window.open(link, '_blank');
-                    div.innerHTML = `<span>📢 ${name}</span><span style="color:var(--accent)">GO</span>`;
-                    container.appendChild(div);
+            const spData = params.get('sp');
+            if(spData) {
+                spData.split('|').forEach(data => {
+                    const [name, link] = data.split(';');
+                    const card = document.createElement('div');
+                    card.className = 'big-card';
+                    card.onclick = () => tg.openTelegramLink(link);
+                    card.innerHTML = `<span>📢 ${name}</span><span style="color:var(--accent); font-weight:bold;">ПОДПИСАТЬСЯ</span>`;
+                    container.appendChild(card);
                 });
+            } else {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); margin-top:20px;">Спонсоров пока нет</p>';
             }
         }
         renderSponsors();
